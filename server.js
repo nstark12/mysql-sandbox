@@ -1,20 +1,12 @@
-const mysql = require('mysql2')
-const connection = mysql.createConnection({
-    socketPath: '/tmp/mysql.sock',
-    user: 'root',
-    password: 'rootroot',
-    database: 'pokemon_db'
-})
+const connection = require('./db/connection')
+const routes = require('./routes')
+const express = require('express')
+const app = express()
+const PORT = process.env.PORT || 3001
 
-const init = async () => {
-    const results = await connection.promise().query(
-        `INSERT INTO pokemon (name, type, moves, is_evolved, trainer_id) VALUES
-        (?, ?, ?, ?, ?)`,
-        ['jigglypuff3', 'fairy', 2, false, 1]
-    )
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
-    const pokemon = await connection.promise().query('SELECT * FROM pokemon')
-    console.log(pokemon)
-}
+app.use(routes)
 
-init()
+app.listen(PORT, () => console.log(`Pokemon API listening at http://localhost:${PORT}`))
